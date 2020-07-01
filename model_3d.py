@@ -356,6 +356,7 @@ def mctest(model, test_loader, nsim):
     loss = loss.cuda()
     for sim in range(nsim):
         with torch.no_grad():
+            count = -1
             for batch_idx, (batch_img, batch_target) in enumerate(test_loader):
                 LOGGER.info('Evaluating batch {}: [{}/{}]'.format(batch_idx, batch_idx * valid_loader.batch_size, len(valid_loader.dataset)))
                 
@@ -372,7 +373,8 @@ def mctest(model, test_loader, nsim):
                 #res = loss(output.squeeze(), batch_target)
             
                 for p in range(len(output)):
-                    target_pred[p].append(output[p].cpu())
+                    count += p
+                    target_pred[count].append(output[p].cpu())
                  
                 
                 correct += torch.sum(target==predicted).item()
@@ -384,7 +386,7 @@ def mctest(model, test_loader, nsim):
 
         # return validation loss and prediction accuracy for the epoch
             target_true = np.subtract(np.exp(target_true), 40)
-            target_pred = np.subtract(np.exp(target_pred),40)
+            target_pred = np.subtract(np.exp(target_pred), 40)
             round_mse = mean_squared_error(target_true, target_pred)
             mse.extend(round_mse)
                                      

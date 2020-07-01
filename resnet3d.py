@@ -138,7 +138,6 @@ class ResNet3d(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        x = F.dropout(x, p = 0.4, training = True)
         x = self.maxpool(x)
 
         x = self.layer1(x)
@@ -222,6 +221,7 @@ class PipelinedResNet3d(ResNet3d):
         x = x.to(self.dev4)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1) 
+        x = F.dropout(x, p = 0.3, training = True)
         x = self.fc(x)
         x = x.to(self.dev1)
         return x

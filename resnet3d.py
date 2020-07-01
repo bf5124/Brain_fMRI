@@ -138,6 +138,7 @@ class ResNet3d(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
+        x = F.dropout(x, p = 0.4, training = True)
         x = self.maxpool(x)
 
         x = self.layer1(x)
@@ -147,6 +148,7 @@ class ResNet3d(nn.Module):
 
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
+        x = F.dropout(x, p = 0.3, training = True)
         x = self.fc(x)
 
         return x

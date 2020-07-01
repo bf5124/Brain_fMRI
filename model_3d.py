@@ -347,6 +347,54 @@ def eval(model, valid_loader, loss):
 
     return mse
 
+def mctest(model, test_loader, nsim):
+    model.eval()
+    mse = []
+    target_pred = [[] for i in range(len(test_loader.dataset)]
+    sampdist_arr = []
+    loss = nn.L1Loss()
+    loss = loss.cuda()
+    for sim in range(nsim):
+        with torch.no_grad():
+            for batch_idx, (batch_img, batch_target) in enumerate(test_loader):
+                LOGGER.info('Evaluating batch {}: [{}/{}]'.format(batch_idx, batch_idx * valid_loader.batch_size, len(valid_loader.dataset)))
+                
+                batch_img = batch_img.unsqueeze(1)
+
+                batch_img = batch_img.cuda()
+                batch_target = batch_target.float().cuda()
+
+                output = model(batch_img)
+            
+                # calculate the loss
+                test_loss += loss(output.squeeze(), batch_target).item()
+                
+                #res = loss(output.squeeze(), batch_target)
+            
+                for p in range(len(output)):
+                    target_pred[p].append(output[p].cpu())
+                 
+                
+                correct += torch.sum(target==predicted).item()
+                
+                #if batch_idx % 10 == 0:
+                #    LOGGER.info('Eval Progress: [{}/{} ({:.0f}%)]'.format(
+                #    batch_idx * valid_loader.batch_size, len(valid_loader.dataset), 
+                #    valid_loader.batch_size * batch_idx / len(valid_loader.dataset) * 100)) 
+
+        # return validation loss and prediction accuracy for the epoch
+            target_true = np.subtract(np.exp(target_true), 40)
+            target_pred = np.subtract(np.exp(target_pred),40)
+            round_mse = mean_squared_error(target_true, target_pred)
+            mse.extend(round_mse)
+                                     
+    
+    
+    for samp in target_pred:
+        sampdist_arr.append([np.mean(samp),np.std(samp)])
+    print(*sampdist_arr, sep = "\n")
+    return [sampdist_arr, mse]
+
 
     
 

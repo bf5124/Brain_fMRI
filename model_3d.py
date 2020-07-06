@@ -350,7 +350,7 @@ def eval(model, valid_loader, loss):
 def mctest(model, test_loader, nsim):
     model.eval()
     mse = []
-    target_pred = [[] for i in range(len(test_loader.dataset)]
+    target_pred = [[] for i in range(len(test_loader.dataset))]
     sampdist_arr = []
     loss = nn.L1Loss()
     loss = loss.cuda()
@@ -373,7 +373,7 @@ def mctest(model, test_loader, nsim):
                 #res = loss(output.squeeze(), batch_target)
             
                 for p in range(len(output)):
-                    count += p
+                    count += 1
                     target_pred[count].append(output[p].cpu())
                  
                 
